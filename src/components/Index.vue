@@ -1,9 +1,38 @@
 <template>
-  <body>
-    <div class="container">
-
+  <div class="container">
+    <br><br><br>
+    <div
+      class="embed-responsive embed-responsive-16by9"
+      v-for="video in videos"
+      :key="video.id"
+    >
+      <iframe
+        class="embed-responsive-item"
+        :src="video.url"
+        width="560"
+        height="315"
+        style="border:none;overflow:hidden"
+        scrolling="no"
+        frameborder="0"
+        allowTransparency="true"
+        allowFullScreen="true"
+      >
+      </iframe>
+      <br>
     </div>
-  </body>
+    <br><br>
+    <div id="form">
+      <form>
+        <div class="input-group">
+            <input type="text" v-model="newVideo" class="form-control" placeholder="Adicionar vídeo..."/>
+            <div class="input-group-append">
+              <button type="submit" @click.prevent="addVideo()" class="btn btn-dark">+</button>
+            </div>
+        </div>
+      </form>
+    </div>
+    <br><br>
+  </div>
 </template>
 
 <script>
@@ -12,21 +41,45 @@ import 'jquery/dist/jquery.slim';
 import 'popper.js/dist/popper';
 import 'bootstrap/dist/js/bootstrap';
 import 'font-awesome/css/font-awesome.css';
+import { videosCollection } from '../firebase';
 
 export default {
   name: 'Index',
+  data() {
+    return {
+      newVideo: '',
+      videos: [],
+      ref: videosCollection,
+    };
+  },
+  created() {
+    this.ref.onSnapshot((querySnapshot) => {
+      this.videos = [];
+      querySnapshot.forEach((doc) => {
+        this.videos.push({
+          id: doc.data().id,
+          url: doc.data().url,
+          createdAt: doc.data().createdAt
+        });
+      });
+    });
+  },
+  methods: {
+    addVideo() {
+      videosCollection.add({
+        url: this.newVideo,
+        id: this.videos.length,
+        createdAt: new Date()
+      });
+    },
+  },
 };
 </script>
 
 <style scoped>
-body {
-  background-image: linear-gradient(to bottom, rgba(0,0,0,1),
-  rgba(0, 0, 0, 0.4)),
-  url("../assets/cruz.jpg");
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-attachment:fixed;
-  height: 100vh;
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

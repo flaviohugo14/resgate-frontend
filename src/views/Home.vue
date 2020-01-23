@@ -6,16 +6,16 @@
       </a>
     </nav>
     <div id="bar">
-      <div class="btn_menu">
+      <div class="btn_menu" @click="alternar('Index')">
         <span class="fa fa-tv"></span>Ao vivo
       </div>
-      <div class="btn_menu">
-        <span class="fa fa-shopping-bag"></span>Loja
+      <div class="btn_menu" @click="alternar('Store')">
+        <span class="fa fa-heart"></span>Ajude-nos
       </div>
-      <div class="btn_menu">
+      <div class="btn_menu" @click="alternar('Events')">
         <span class="fa fa-calendar"></span>Eventos
       </div>
-      <div class="btn_menu">
+      <div class="btn_menu" @click="alternar('Contact')">
         <span class="fa fa-user"></span>Contato
       </div>
       <div class="btn_menu" @click="sair">
@@ -23,7 +23,10 @@
       </div>
     </div>
     <div id="component">
-      <Index/>
+      <Index v-show="this.aba === 'Index'"/>
+      <Store v-show="this.aba === 'Store'"/>
+      <Events v-show="this.aba === 'Events'"/>
+      <Contact v-show="this.aba === 'Contact'"/>
     </div>
   </div>
 </template>
@@ -36,13 +39,27 @@ import 'bootstrap/dist/js/bootstrap';
 import 'font-awesome/css/font-awesome.css';
 import firebase from 'firebase';
 import Index from '../components/Index.vue';
+import Store from '../components/Store.vue';
+import Contact from '../components/Contact.vue';
+import Events from '../components/Events.vue';
 
 export default {
   name: 'home',
+  data() {
+    return {
+      aba: 'Index',
+    };
+  },
   components: {
     Index,
+    Store,
+    Contact,
+    Events,
   },
   methods: {
+    alternar(name) {
+      this.aba = name;
+    },
     sair() {
       firebase.auth().signOut().then(() => {
         this.$router.replace('login');
